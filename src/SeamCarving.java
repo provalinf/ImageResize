@@ -45,11 +45,13 @@ public class SeamCarving {
             flot = new FileWriter(fichier);
             flotFiltre = new PrintWriter(flot);
             flotFiltre.println("P2");
-            flotFiltre.println(image.length + " " + image[0].length);
+            flotFiltre.println(image[0].length + " " + image.length);
+            flotFiltre.println("255");
             for (int i = 0; i < image.length; i++) {
                 for (int j = 0; j < image[i].length; j++) {
                     flotFiltre.print(image[i][j] + " ");
                 }
+                System.out.println();
             }
             flotFiltre.close();
         } catch (IOException e) {
@@ -130,164 +132,33 @@ public class SeamCarving {
 
     private static ArrayList<Integer> dijkstra(Graph graph, int s, int t) {
         int min, cost;
+        HashMap<Integer, Edge> parent = new HashMap<Integer, Edge>(graph.vertices());
         ArrayList<Integer> path = new ArrayList<>(graph.vertices());
         boolean[] visitedNodes = new boolean[graph.vertices()];
         Heap heap = new Heap(graph.vertices());
         heap.decreaseKey(0, 0); // initialisation du départ
-        while(!heap.isEmpty()){
+        while (!heap.isEmpty()) {
             min = heap.pop();
             visitedNodes[min] = true;
             for (Edge e : graph.next(min)) {
-                if(!visitedNodes[e.to]){
+                if (!visitedNodes[e.to]) {
                     cost = heap.priority(min) + e.cost;
-                    if(cost < heap.priority(e.to)){
+                    if (cost < heap.priority(e.to)) {
                         heap.decreaseKey(e.to, cost);
-                        path.add(e.to);
+                        parent.put(e.to, e);
                     }
                 }
             }
         }
+        int vertice = t;
+        while (vertice != s) {
+            path.add(parent.get(vertice).from);
+            vertice = parent.get(vertice).from;
+        }
         Collections.reverse(path);
-        /*cost  = new HashMap<>();
-        ArrayList<Integer> nodesVisited = new ArrayList<>();
-        ArrayList<Integer> nodesNoVisited = new ArrayList<>();
-        HashMap<Integer, Integer> predecessors = new HashMap<>();
-
-        for (Edge e:graph.edges()) {g.
-            if(e.from==0){
-                cost.put(e.to, e.cost);
-            }
-        }
-        cost.put(s, 0);
-        nodesNoVisited.add(s);
-        while (nodesNoVisited.size() > 0) {
-            int minNode = min(nodesNoVisited);
-            nodesVisited.add(minNode);
-            nodesNoVisited.remove(minNode);
-            for (Edge e : graph.adj(minNode)) {
-                if (getMinCost(e.from) > getMinCost(minNode) + e.cost) {
-                    cost.put(e.from, getMinCost(minNode) + e.cost);
-                    predecessors.put(e.from, minNode);
-                    nodesNoVisited.add(e.from);
-                }
-            }
-        }
-
-        ArrayList<Integer> res = new ArrayList<>();
-        if (predecessors.get(t) == -1) {
-            return null;
-        }
-        res.add(t);
-        while (predecessors.get(t) != null) {
-            t = predecessors.get(t);
-            res.add(t);
-        }
-        Collections.reverse(res);
-        return res;*/
-
-/*		ArrayList<Integer> path = new ArrayList<>();
-		Integer[][] weightTab = new Integer[graph.vertices()][3];
-		for (int i = 0; i < weightTab.length; i++) {
-			weightTab[i][0] = i; // provisoire : nom du sommet
-			if (i == s) weightTab[i][1] = 0; // point de départ
-			else weightTab[i][1] = -1; // cout
-			weightTab[i][2] = 0; // visité ?
-		}
-		Integer[][] parentTab = new Integer[graph.vertices()][2];
-		for (int i = 0; i < parentTab.length; i++) {
-			parentTab[i][0] = i; //provisoire : nom du sommet
-			parentTab[i][1] = null; // prédecesseur
-		}
-		int min;
-
-		do {
-			min = min(weightTab);
-			weightTab[min][2] = 1; // visité
-			Iterator ite = graph.adj((Integer) weightTab[min][0]).iterator();
-			while (ite.hasNext()) {
-				Edge e = (Edge) ite.next();
-				int poidsP = (int) weightTab[min][1];
-				int poidsPF = e.cost;
-				int fils = e.to;
-				int poidsF = (int) weightTab[fils][1];
-				if ((fils != (Integer) weightTab[min][0] && weightTab[fils][2] == 0) && ((poidsP + poidsPF < poidsF) || poidsF == -1)) {
-					weightTab[fils][1] = poidsP + poidsPF;
-					parentTab[fils][1] = min;
-				}
-			}
-		}
-		while (min != t);
-
-		int o = t;
-		path.add(o);
-		while (parentTab[o][1] != null) {
-			path.add(parentTab[o][1]);
-			o = parentTab[o][1];
-		}
-*//*        System.out.println();
-
-        for (int i = 0; i < weightTab.length; i++) {
-            for (int j = 0; j < weightTab[i].length; j++) {
-                System.out.print(weightTab[i][j] + ",");
-            }
-            System.out.println();
-        }
-*//*
-         *//*for (int i = 0; i < parentTab.length; i++) {
-            for (int j = 0; j < parentTab[i].length; j++) {
-                System.out.print(parentTab[i][j] + ",");
-            }
-            System.out.println();
-        }*//*
-		Collections.reverse(path);
-
-		return path;*/
+        path.add(t);
         return path;
     }
-
-/*    private static int min(ArrayList<Integer> noVisitedNode) {
-        int min = -1;
-        for (Integer node : noVisitedNode) {
-            if (min == -1) {
-                min = node;
-            } else {
-                if (getMinCost(node) < getMinCost(min)) {
-                    min = node;
-                }
-            }
-        }
-        return min;*/
-
-		/*int i = 0;
-		boolean trouve = false;
-		while (i < weightTab.length && !trouve) {
-			if ((int) weightTab[i][1] >= 0 && weightTab[i][2] == 0) {
-				trouve = true;
-			}
-			i++;
-		}
-		if (!trouve) {
-			return -1; // erreur, il n'y a pas de minimum
-		}
-		int min = (int) weightTab[i - 1][1];
-		int res = i - 1;
-		for (int j = i; j < weightTab.length; j++) {
-			if (min > (int) weightTab[j][1] && (int) weightTab[j][1] >= 0 && weightTab[i][2] == 0) {
-				min = (int) weightTab[j][1];
-				res = j;
-			}
-		}
-		return res;*/
-    //}
-
-/*    private static int getMinCost(Integer node) {
-        int costRes = cost.get(node);
-        if (costRes == -1) {
-            return -666;
-        } else {
-            return costRes;
-        }
-    }*/
 
     private static int[][] removePixels(int[][] img, ArrayList<Integer> removedNodes) {
         ArrayList<Integer> newPxl = new ArrayList<>(img.length);
@@ -310,37 +181,35 @@ public class SeamCarving {
 
     public static void main(String[] args) {
         //int table[][] = {{3, 11, 24, 39}, {8, 21, 29, 39}, {200, 60, 25, 0}};
-        int table[][] = readpgm("ex1.pgm");
+        int table[][] = readpgm("ex41.pgm");
         //writepgm(table, "test1.pgm");
 
-        for (int ii = 0; ii < 2; ii++) {
+        for (int ii = 0; ii < 100; ii++) {
             System.out.println(ii + "ème cycle");
 
             int itr[][] = interest(table);
-            for (int i = 0; i < itr.length; i++) {
+           /* for (int i = 0; i < itr.length; i++) {
                 for (int j = 0; j < itr[i].length; j++) {
                     System.out.print(itr[i][j] + ",");
                 }
                 System.out.println();
             }
             System.out.println();
-
-            toGraph(itr).writeFile("testtttt.txt");
-
-            System.out.println("Dijkstra");
+            System.out.println("Dijkstra");*/
             ArrayList<Integer> dijkstra = dijkstra(toGraph(itr), 0, itr.length * itr[0].length + 1);
             System.out.println(dijkstra);
 
-            System.out.println("Image finale");
+            //System.out.println("Image finale");
             int[][] newImg = removePixels(table, dijkstra);
-            for (int i = 0; i < newImg.length; i++) {
+            /*for (int i = 0; i < newImg.length; i++) {
                 for (int j = 0; j < newImg[i].length; j++) {
                     System.out.print(newImg[i][j] + ",");
                 }
                 System.out.println();
             }
-            System.out.println();
+            System.out.println();*/
             table = newImg;
         }
+        writepgm(table, "essai.pgm");
     }
 }
