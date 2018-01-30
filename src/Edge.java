@@ -9,5 +9,13 @@ class Edge
 		this.to = y;
 		this.cost = cost;
 	 }
-   
+
+	@Override
+	public String toString() {
+		return "Edge{" +
+				"from=" + from +
+				", to=" + to +
+				", cost=" + cost +
+				'}';
+	}
 }

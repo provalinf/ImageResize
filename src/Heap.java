@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 class Heap {
     int cor[];
     int item[];
@@ -84,5 +86,14 @@ class Heap {
         return ret;
     }
 
+    @Override
+    public String toString() {
+        return "Heap{" +
+                "cor=" + Arrays.toString(cor) +
+                ", item=" + Arrays.toString(item) +
+                ", heap=" + Arrays.toString(heap) +
+                ", size=" + size +
+                '}';
+    }
 }
 
