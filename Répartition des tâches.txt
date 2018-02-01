@@ -1,0 +1,22 @@
+Répartition des tâches : 
+Q1  : Cyril BASILE
+Q2  : Valentin BONNAL
+Q3  : Valentin BONNAL / Cyril BASILE
+Q4	: Cyril BASILE
+Q5	: Valentin BONNAL
+
+Utilisation du logiciel : 
+
+Trois paramètres à rentrer :
+	1. nom de l'image d'origine
+	2. nom de l'image de fin
+	3. nombre de pixels par ligne à supprimer
+
+
+Améliorations apportées : 
+	_ Barre de progression, temps restant avant la fin de l'execution
+	_ Selection de l'image grâce au premier paramètre
+	_ Choix du nom de l'image résultante grâce au second paramètre
+	_ Nombre de pixels par ligne à supprimer paramétrable
+
+	
