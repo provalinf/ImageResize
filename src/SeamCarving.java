@@ -10,8 +10,8 @@ public class SeamCarving {
 
 	public static int[][] readpgm(String fn) {
 		try {
-			InputStream f = ClassLoader.getSystemClassLoader().getResourceAsStream(fn);
-			BufferedReader d = new BufferedReader(new InputStreamReader(f));
+			//InputStream f = ClassLoader.getSystemClassLoader().getResourceAsStream(fn);
+			BufferedReader d = new BufferedReader(new FileReader(fn));
 			String magic = d.readLine();
 			String line = d.readLine();
 			while (line.startsWith("#")) {
@@ -206,6 +206,9 @@ public class SeamCarving {
 		int table[][] = readpgm(args[0]);
 
 		if (table == null || table.length <= 0 || table[0].length <= 0) {
+			System.out.println(table == null);
+			System.out.println(table.length);
+			System.out.println(table[0].length);
 			System.out.println("L'image sélectionnée est trop petite !");
 			System.exit(1);
 		}

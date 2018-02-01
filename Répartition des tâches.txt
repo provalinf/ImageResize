@@ -1,4 +1,4 @@
-Répartition des tâches : 
+﻿Répartition des tâches : 
 Q1  : Cyril BASILE
 Q2  : Valentin BONNAL
 Q3  : Valentin BONNAL / Cyril BASILE
@@ -19,4 +19,5 @@ Améliorations apportées :
 	_ Choix du nom de l'image résultante grâce au second paramètre
 	_ Nombre de pixels par ligne à supprimer paramétrable
 
+readPGM modifié en ligne 1 (incompatible avec le jar dans la version initiale)
 	
