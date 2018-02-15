@@ -135,6 +135,65 @@ public class SeamCarving {
 		return graph;
 	}
 
+	public static Graph toGraph2(int[][] itr) {
+		int nbNodes = itr.length * itr[0].length + 2 + ((itr.length - 2) * itr[0].length);
+		Graph graph = new Graph(nbNodes);
+		for (int i = 1; i < itr[0].length + 1; i++) {
+			Edge edge = new Edge(0, i, 0);
+			graph.addEdge(edge);
+		}
+
+		int nbNodesInterm = 0;
+		for (int ligne = 0; ligne < itr.length; ligne++) {
+			int nbcolonne = itr[ligne].length;
+			for (int colonne = 0; colonne < nbcolonne; colonne++) {
+
+				int numNoeud = colonne + nbcolonne * (ligne + nbNodesInterm) + 1;
+
+				if (ligne + 1 < itr.length) {
+					if (colonne - 1 < 0 && colonne + 1 < nbcolonne) {    // premier noeud, (rien à gauche)
+
+						Edge edge = new Edge(numNoeud, numNoeud + nbcolonne, itr[ligne][colonne]);
+						Edge edgeP1 = new Edge(numNoeud, numNoeud + nbcolonne + 1, itr[ligne][colonne]);
+
+						graph.addEdge(edge);
+						graph.addEdge(edgeP1);
+
+					} else if (colonne - 1 >= 0 && colonne + 1 < nbcolonne) {
+
+						Edge edgeM1 = new Edge(numNoeud, numNoeud + nbcolonne - 1, itr[ligne][colonne]);
+						Edge edge = new Edge(numNoeud, numNoeud + nbcolonne, itr[ligne][colonne]);
+						Edge edgeP1 = new Edge(numNoeud, numNoeud + nbcolonne + 1, itr[ligne][colonne]);
+
+						graph.addEdge(edgeM1);
+						graph.addEdge(edge);
+						graph.addEdge(edgeP1);
+
+					} else if (colonne - 1 >= 0 && colonne + 1 >= nbcolonne) {
+
+						Edge edgeM1 = new Edge(numNoeud, numNoeud + nbcolonne - 1, itr[ligne][colonne]);
+						Edge edge = new Edge(numNoeud, numNoeud + nbcolonne, itr[ligne][colonne]);
+
+						graph.addEdge(edgeM1);
+						graph.addEdge(edge);
+
+					}
+
+					if (ligne + 2 < itr.length) {
+						Edge edgeV = new Edge(numNoeud + nbcolonne, numNoeud + nbcolonne * 2, 0);
+						graph.addEdge(edgeV);
+					}
+
+				} else {
+					Edge edge = new Edge(numNoeud, nbNodes - 1, itr[ligne][colonne]);
+					graph.addEdge(edge);
+				}
+			}
+			if (ligne + 2 < itr.length) nbNodesInterm++;
+		}
+		return graph;
+	}
+
 	private static ArrayList<Integer> dijkstra(Graph graph, int s, int t) {
 		int min, cost;
 		HashMap<Integer, Edge> parent = new HashMap<Integer, Edge>(graph.vertices());
@@ -218,8 +277,6 @@ public class SeamCarving {
 		}
 
 		ProgressBar pb = new ProgressBar(" " + args[0] + " -> " + args[1], Integer.parseInt(args[2])/*, ProgressBarStyle.ASCII*/);
-		//int table[][] = {{3, 11, 24, 39}, {8, 21, 29, 39}, {200, 60, 25, 0}};
-		//writepgm(table, "test1.pgm");
 
 		pb.start();
 		for (int ii = 0; ii < Integer.parseInt(args[2]); ii++) {
