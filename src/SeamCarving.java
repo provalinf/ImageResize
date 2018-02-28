@@ -1,11 +1,11 @@
 import me.tongfei.progressbar.ProgressBar;
 
-import javax.swing.text.html.HTMLDocument;
 import java.io.*;
 import java.util.*;
 
 public class SeamCarving {
-    static HashMap<Integer, Integer> costMap;
+	static HashMap<Integer, Integer> costMap;
+
 	public static int[][] readpgm(String fn) {
 		try {
 			//InputStream f = ClassLoader.getSystemClassLoader().getResourceAsStream(fn);
@@ -26,6 +26,34 @@ public class SeamCarving {
 			int count = 0;
 			while (count < height * width) {
 				im[count / width][count % width] = s.nextInt();
+				count++;
+			}
+			return im;
+		} catch (Throwable t) {
+			t.printStackTrace(System.err);
+			return null;
+		}
+	}
+
+	public static int[][][] readppm(String fn) {
+		try {
+			BufferedReader d = new BufferedReader(new FileReader(fn));
+			String magic = d.readLine();
+			String line = d.readLine();
+			while (line.startsWith("#")) {
+				line = d.readLine();
+			}
+			Scanner s = new Scanner(line);
+			int width = s.nextInt();
+			int height = s.nextInt();
+			line = d.readLine();
+			s = new Scanner(line);
+			int maxVal = s.nextInt();
+			int[][][] im = new int[height][width][3];
+			s = new Scanner(d);
+			int count = 0;
+			while (count < height * width) {
+				im[count / width][count % width] = new int[]{s.nextInt(), s.nextInt(), s.nextInt()};
 				count++;
 			}
 			return im;
@@ -62,6 +90,33 @@ public class SeamCarving {
 		}
 	}
 
+	public static void writeppm(int[][][] image, String filename) {
+		FileWriter flot;
+		PrintWriter flotFiltre;
+		File fichier;
+		try {
+			String nomFichier = filename;
+			fichier = new File(nomFichier);
+			if (fichier.exists()) {
+				throw new IOException("Le fichier existe deja");
+			}
+			flot = new FileWriter(fichier);
+			flotFiltre = new PrintWriter(flot);
+			flotFiltre.println("P3");
+			flotFiltre.println(image[0].length + " " + image.length);
+			flotFiltre.println("255");
+			for (int[][] anImage : image) {
+				for (int[] anAnImage : anImage)
+					for (int RVB : anAnImage)
+						flotFiltre.print(RVB + " ");
+				System.out.println();
+			}
+			flotFiltre.close();
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+	}
+
 	public static int[][] interest(int[][] image) {
 		int interest[][] = new int[image.length][];
 
@@ -81,6 +136,31 @@ public class SeamCarving {
 			}
 		}
 		return interest;
+	}
+
+	public static int[][] interestColor(int[][][] image) {
+		int interest[][] = new int[image.length][];
+
+		for (int ligne = 0; ligne < image.length; ligne++) {
+			int nbcolonne = image[ligne].length;
+			interest[ligne] = new int[nbcolonne];
+			for (int colonne = 0; colonne < nbcolonne; colonne++) {
+				if (colonne - 1 < 0 && colonne + 1 < nbcolonne) {    // premier pixel, (rien à gauche)
+					interest[ligne][colonne] = (int) Math.abs(averageRVB(image[ligne][colonne]) - averageRVB(image[ligne][colonne + 1]));
+				} else if (colonne - 1 >= 0 && colonne + 1 < nbcolonne) {
+					interest[ligne][colonne] = (int) Math.abs((averageRVB(image[ligne][colonne]) - (averageRVB(image[ligne][colonne - 1]) + averageRVB(image[ligne][colonne + 1])) / 2));
+				} else if (colonne - 1 >= 0 && colonne + 1 >= nbcolonne) {
+					interest[ligne][colonne] = (int) Math.abs(averageRVB(image[ligne][colonne - 1]) - averageRVB(image[ligne][colonne]));
+				} else {
+					interest[ligne][colonne] = (int) averageRVB(image[ligne][colonne]);
+				}
+			}
+		}
+		return interest;
+	}
+
+	private static double averageRVB(int[] RVB) {
+		return Arrays.stream(RVB).average().getAsDouble();
 	}
 
 	public static Graph toGraph(int[][] itr) {
@@ -192,7 +272,7 @@ public class SeamCarving {
 		return graph;
 	}
 
-	private static ArrayList<Integer> dijkstra(Graph graph, int s, int t) {
+	public static ArrayList<Integer> dijkstra(Graph graph, int s, int t) {
 		int min, cost;
 		HashMap<Integer, Edge> parent = new HashMap<Integer, Edge>(graph.vertices());
 		ArrayList<Integer> path = new ArrayList<>(graph.vertices());
@@ -243,7 +323,7 @@ public class SeamCarving {
 					}
 				}
 			}
-            costMap.put(graph.vertices()-1, heap.priority(min));
+			costMap.put(graph.vertices() - 1, heap.priority(min));
 		}
 		int vertice = t;
 		while (vertice != s) {
@@ -255,18 +335,19 @@ public class SeamCarving {
 		return path;
 	}
 
-	public static ArrayList<Integer>[] twoPath(Graph g, int s, int t){
-	    ArrayList[] res = new ArrayList[2];
-	    res[0] = new ArrayList<Integer>();
-	    res[1] = new ArrayList<Integer>();
-        Iterator ite = g.edges().iterator();
-	    while(ite.hasNext()){
-	        Edge e = (Edge) ite.next();
-            e.cost = e.cost + (costMap.get(e.from) - costMap.get(e.to));
-            System.out.println(e);
-        }
-	    return res;
-    }
+	public static ArrayList<Integer>[] twoPath(Graph g, int s, int t) {
+		ArrayList[] res = new ArrayList[2];
+		res[0] = new ArrayList<Integer>();
+		res[1] = new ArrayList<Integer>();
+		Iterator ite = g.edges().iterator();
+		while (ite.hasNext()) {
+			Edge e = (Edge) ite.next();
+			e.cost = e.cost + (costMap.get(e.from) - costMap.get(e.to));
+			System.out.println(e);
+		}
+		return res;
+	}
+
 	private static int[][] removePixels(int[][] img, ArrayList<Integer> removedNodes) {
 		ArrayList<Integer> newPxl = new ArrayList<>(img.length);
 		int[][] newPxlTab = new int[img.length][];
@@ -282,6 +363,27 @@ public class SeamCarving {
 			}
 			newPxlTab[ligne] = new int[newPxl.size()];
 			newPxlTab[ligne] = newPxl.stream().mapToInt(i -> i).toArray();
+		}
+		return newPxlTab;
+	}
+
+	public static int[][][] removePixelsColor(int[][][] img, ArrayList<Integer> removedNodes) {
+		ArrayList<int[]> newPxl = new ArrayList<>(img.length);
+		int[][][] newPxlTab = new int[img.length][][];
+
+		for (int ligne = 0; ligne < img.length; ligne++) {
+			int nbcolonne = img[ligne].length;
+			newPxl.clear();
+			for (int colonne = 0; colonne < nbcolonne; colonne++) {
+				int numNoeud = colonne + nbcolonne * ligne + 1;
+				if (!removedNodes.contains(numNoeud)) {
+					newPxl.add(img[ligne][colonne]);
+				}
+			}
+			newPxlTab[ligne] = new int[newPxl.size()][];
+			for (int colonne = 0; colonne < newPxl.size(); colonne++) {
+				newPxlTab[ligne][colonne] = Arrays.stream(newPxl.get(colonne)).toArray();
+			}
 		}
 		return newPxlTab;
 	}
