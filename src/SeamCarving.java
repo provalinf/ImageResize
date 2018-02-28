@@ -335,19 +335,38 @@ public class SeamCarving {
 		return path;
 	}
 
-	public static ArrayList<Integer>[] twoPath(Graph g, int s, int t) {
-		ArrayList[] res = new ArrayList[2];
-		res[0] = new ArrayList<Integer>();
-		res[1] = new ArrayList<Integer>();
-		Iterator ite = g.edges().iterator();
-		while (ite.hasNext()) {
-			Edge e = (Edge) ite.next();
-			e.cost = e.cost + (costMap.get(e.from) - costMap.get(e.to));
-			System.out.println(e);
-		}
-		return res;
-	}
+	public static ArrayList<Integer>[] twoPath(Graph g, int s, int t){
+	    ArrayList[] res = new ArrayList[2];
+	    res[0] = new ArrayList<Integer>();
+	    res[1] = new ArrayList<Integer>();
+        ArrayList<Integer> shortPath = dijkstra2(g, s, t);
+        Iterator ite = g.edges().iterator();
 
+        //différence entre les aretes
+        int j = 0;
+	    while(ite.hasNext()){
+	        Edge e = (Edge) ite.next();
+            e.cost = e.cost + (costMap.get(e.from) - costMap.get(e.to));
+            //System.out.println(shortPath);
+			if(j+1 < shortPath.size()){
+				int from = shortPath.get(j);
+				int to = shortPath.get(j+1);
+				if(e.from == from && e.to == to){
+					inverseSens(e);
+					j++;
+				}
+			}
+            System.out.println(e);
+        }
+        g.writeFile("inverse.dot");
+	    return res;
+    }
+
+    private static void inverseSens(Edge e){
+	    int tempo = e.from;
+	    e.from = e.to;
+	    e.to = tempo;
+    }
 	private static int[][] removePixels(int[][] img, ArrayList<Integer> removedNodes) {
 		ArrayList<Integer> newPxl = new ArrayList<>(img.length);
 		int[][] newPxlTab = new int[img.length][];
