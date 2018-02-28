@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 
 public class TestSC {
     public static void main(String[] args) {
@@ -9,7 +10,9 @@ public class TestSC {
         //SeamCarving.dijkstra2(SeamCarving.toGraph2(itr2), 0, itr2.length * itr2[0].length + 1);
         System.out.println(SeamCarving.dijkstra2(SeamCarving.toGraph2(itr2), 0, (itr2.length * itr2[0].length + 2 + ((itr2.length - 2) * itr2[0].length)) - 1));
         //SeamCarving.toGraph2(itr2).writeFile("dij");
-        SeamCarving.twoPath(SeamCarving.toGraph2(itr2), 0, (itr2.length * itr2[0].length + 2 + ((itr2.length - 2) * itr2[0].length)) - 1);
+        ArrayList<Integer>[] res = SeamCarving.twoPath(SeamCarving.toGraph2(itr2), 0, (itr2.length * itr2[0].length + 2 + ((itr2.length - 2) * itr2[0].length)) - 1);
         SeamCarving.toGraph2(itr2).writeFile("test222double.dot");
+        System.out.println(res[0]);
+        System.out.println(res[1]);
     }
 }
