@@ -224,6 +224,39 @@ public class SeamCarving {
 		return path;
 	}
 
+	public static ArrayList<Integer> dijkstra2(Graph graph, int s, int t) {
+		int min, cost;
+		HashMap<Integer, Integer> costMap = new HashMap<>(graph.vertices());
+		HashMap<Integer, Edge> parent = new HashMap<Integer, Edge>(graph.vertices());
+		ArrayList<Integer> path = new ArrayList<>(graph.vertices());
+		boolean[] visitedNodes = new boolean[graph.vertices()];
+		Heap heap = new Heap(graph.vertices());
+		heap.decreaseKey(0, 0); // initialisation du départ
+		while (!heap.isEmpty()) {
+			min = heap.pop();
+			visitedNodes[min] = true;
+			for (Edge e : graph.next(min)) {
+				if (!visitedNodes[e.to]) {
+					cost = heap.priority(min) + e.cost;
+					costMap.put(e.from, heap.priority(min));
+					if (cost < heap.priority(e.to)) {
+						heap.decreaseKey(e.to, cost);
+						parent.put(e.to, e);
+					}
+				}
+			}
+		}
+		int vertice = t;
+		while (vertice != s) {
+			path.add(parent.get(vertice).from);
+			vertice = parent.get(vertice).from;
+		}
+		Collections.reverse(path);
+		path.add(t);
+		System.out.println(costMap);
+		return path;
+	}
+
 	private static int[][] removePixels(int[][] img, ArrayList<Integer> removedNodes) {
 		ArrayList<Integer> newPxl = new ArrayList<>(img.length);
 		int[][] newPxlTab = new int[img.length][];
