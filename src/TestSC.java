@@ -8,5 +8,6 @@ public class TestSC {
 		//SeamCarving.toGraph(itr2).writeFile("test222ori.dot");
 		//SeamCarving.toGraph2(itr2).writeFile("test222double.dot");
 		SeamCarving.dijkstra2(SeamCarving.toGraph2(itr2), 0, itr2.length * itr2[0].length + 1);
+		SeamCarving.twoPath(SeamCarving.toGraph2(itr2), 0, itr2.length * itr2[0].length + 1);
 	}
 }

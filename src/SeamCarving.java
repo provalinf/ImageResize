@@ -1,13 +1,11 @@
 import me.tongfei.progressbar.ProgressBar;
 
+import javax.swing.text.html.HTMLDocument;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 
 public class SeamCarving {
-
+    static HashMap<Integer, Integer> costMap;
 	public static int[][] readpgm(String fn) {
 		try {
 			//InputStream f = ClassLoader.getSystemClassLoader().getResourceAsStream(fn);
@@ -226,7 +224,7 @@ public class SeamCarving {
 
 	public static ArrayList<Integer> dijkstra2(Graph graph, int s, int t) {
 		int min, cost;
-		HashMap<Integer, Integer> costMap = new HashMap<>(graph.vertices());
+		costMap = new HashMap<>(graph.vertices());
 		HashMap<Integer, Edge> parent = new HashMap<Integer, Edge>(graph.vertices());
 		ArrayList<Integer> path = new ArrayList<>(graph.vertices());
 		boolean[] visitedNodes = new boolean[graph.vertices()];
@@ -245,6 +243,7 @@ public class SeamCarving {
 					}
 				}
 			}
+            costMap.put(graph.vertices()-1, heap.priority(min));
 		}
 		int vertice = t;
 		while (vertice != s) {
@@ -253,10 +252,21 @@ public class SeamCarving {
 		}
 		Collections.reverse(path);
 		path.add(t);
-		System.out.println(costMap);
 		return path;
 	}
 
+	public static ArrayList<Integer>[] twoPath(Graph g, int s, int t){
+	    ArrayList[] res = new ArrayList[2];
+	    res[0] = new ArrayList<Integer>();
+	    res[1] = new ArrayList<Integer>();
+        Iterator ite = g.edges().iterator();
+	    while(ite.hasNext()){
+	        Edge e = (Edge) ite.next();
+            e.cost = e.cost + (costMap.get(e.from) - costMap.get(e.to));
+            System.out.println(e);
+        }
+	    return res;
+    }
 	private static int[][] removePixels(int[][] img, ArrayList<Integer> removedNodes) {
 		ArrayList<Integer> newPxl = new ArrayList<>(img.length);
 		int[][] newPxlTab = new int[img.length][];
