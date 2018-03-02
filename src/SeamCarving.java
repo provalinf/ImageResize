@@ -213,6 +213,56 @@ public class SeamCarving {
 		return graph;
 	}
 
+	public static Graph toGraphEnergie(int[][] img) {
+		Graph graph = new Graph(img.length * img[0].length + 2);
+		for (int i = 1; i < img[0].length + 1; i++) {
+			Edge edge = new Edge(0, i, 0);
+			graph.addEdge(edge);
+		}
+
+		for (int ligne = 0; ligne < img.length; ligne++) {
+			int nbcolonne = img[ligne].length;
+			for (int colonne = 0; colonne < nbcolonne; colonne++) {
+
+				int numNoeud = colonne + nbcolonne * ligne + 1;
+
+				if (ligne + 1 < img.length) {
+					if (colonne - 1 < 0 && colonne + 1 < nbcolonne) {    // premier noeud, (rien à gauche)
+
+						Edge edge = new Edge(numNoeud, numNoeud + nbcolonne, img[ligne][colonne + 1]);
+						Edge edgeP1 = new Edge(numNoeud, numNoeud + nbcolonne + 1, Math.abs(img[ligne][colonne + 1] - img[ligne + 1][colonne]));
+
+						graph.addEdge(edge);
+						graph.addEdge(edgeP1);
+
+					} else if (colonne - 1 >= 0 && colonne + 1 < nbcolonne) {
+
+						Edge edgeM1 = new Edge(numNoeud, numNoeud + nbcolonne - 1, Math.abs(img[ligne][colonne - 1] - img[ligne + 1][colonne]));
+						Edge edge = new Edge(numNoeud, numNoeud + nbcolonne, Math.abs(img[ligne][colonne + 1] - img[ligne][colonne - 1]));
+						Edge edgeP1 = new Edge(numNoeud, numNoeud + nbcolonne + 1, Math.abs(img[ligne][colonne + 1] - img[ligne + 1][colonne]));
+
+						graph.addEdge(edgeM1);
+						graph.addEdge(edge);
+						graph.addEdge(edgeP1);
+
+					} else if (colonne - 1 >= 0 && colonne + 1 >= nbcolonne) {
+
+						Edge edgeM1 = new Edge(numNoeud, numNoeud + nbcolonne - 1, Math.abs(img[ligne][colonne - 1] - img[ligne + 1][colonne]));
+						Edge edge = new Edge(numNoeud, numNoeud + nbcolonne, img[ligne][colonne - 1]);
+
+						graph.addEdge(edgeM1);
+						graph.addEdge(edge);
+
+					}
+				} else {
+					Edge edge = new Edge(numNoeud, img.length * img[0].length + 1, Math.abs(((colonne - 1) < 0 ? 0 : img[ligne][colonne - 1]) - ((colonne + 1) >= nbcolonne ? 0 : img[ligne][colonne + 1])));
+					graph.addEdge(edge);
+				}
+			}
+		}
+		return graph;
+	}
+
 	public static Graph toGraph2(int[][] itr) {
 		int nbNodes = itr.length * itr[0].length + 2 + ((itr.length - 2) * itr[0].length);
 		Graph graph = new Graph(nbNodes);
@@ -387,7 +437,7 @@ public class SeamCarving {
 		e.to = tempo;
 	}
 
-	private static int[][] removePixels(int[][] img, ArrayList<Integer> removedNodes) {
+	public static int[][] removePixels(int[][] img, ArrayList<Integer> removedNodes) {
 		ArrayList<Integer> newPxl = new ArrayList<>(img.length);
 		int[][] newPxlTab = new int[img.length][];
 
