@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 
 public class TestSC {
     public static void main(String[] args) {
@@ -12,7 +13,9 @@ public class TestSC {
         //SeamCarving.toGraph2(itr2).writeFile("dij");
         ArrayList<Integer>[] res = SeamCarving.twoPath(SeamCarving.toGraph2(itr2), 0, (itr2.length * itr2[0].length + 2 + ((itr2.length - 2) * itr2[0].length)) - 1);
         SeamCarving.toGraph2(itr2).writeFile("test222double.dot");
-        System.out.println(res[0]);
-        System.out.println(res[1]);
+/*        System.out.println(res[0]);
+        System.out.println(res[1]);*/
+        //SeamCarving.removeZero(itr2, SeamCarving.toGraph2(itr2));
+        //System.out.println("La conversion : "+SeamCarving.convertNumNode0ToPixel(26, 5));
     }
 }
