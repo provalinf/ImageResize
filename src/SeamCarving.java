@@ -212,55 +212,57 @@ public class SeamCarving {
 		}
 		return graph;
 	}
-    public static Graph toGraphEnergie(int[][] img) {
-        Graph graph = new Graph(img.length * img[0].length + 2);
-        for (int i = 1; i < img[0].length + 1; i++) {
-            Edge edge = new Edge(0, i, 0);
-            graph.addEdge(edge);
-        }
 
-        for (int ligne = 0; ligne < img.length; ligne++) {
-            int nbcolonne = img[ligne].length;
-            for (int colonne = 0; colonne < nbcolonne; colonne++) {
+	public static Graph toGraphEnergie(int[][] img) {
+		Graph graph = new Graph(img.length * img[0].length + 2);
+		for (int i = 1; i < img[0].length + 1; i++) {
+			Edge edge = new Edge(0, i, 0);
+			graph.addEdge(edge);
+		}
 
-                int numNoeud = colonne + nbcolonne * ligne + 1;
+		for (int ligne = 0; ligne < img.length; ligne++) {
+			int nbcolonne = img[ligne].length;
+			for (int colonne = 0; colonne < nbcolonne; colonne++) {
 
-                if (ligne + 1 < img.length) {
-                    if (colonne - 1 < 0 && colonne + 1 < nbcolonne) {    // premier noeud, (rien à gauche)
+				int numNoeud = colonne + nbcolonne * ligne + 1;
 
-                        Edge edge = new Edge(numNoeud, numNoeud + nbcolonne, img[ligne][colonne + 1]);
-                        Edge edgeP1 = new Edge(numNoeud, numNoeud + nbcolonne + 1, Math.abs(img[ligne][colonne + 1] - img[ligne + 1][colonne]));
+				if (ligne + 1 < img.length) {
+					if (colonne - 1 < 0 && colonne + 1 < nbcolonne) {    // premier noeud, (rien à gauche)
 
-                        graph.addEdge(edge);
-                        graph.addEdge(edgeP1);
+						Edge edge = new Edge(numNoeud, numNoeud + nbcolonne, img[ligne][colonne + 1]);
+						Edge edgeP1 = new Edge(numNoeud, numNoeud + nbcolonne + 1, Math.abs(img[ligne][colonne + 1] - img[ligne + 1][colonne]));
 
-                    } else if (colonne - 1 >= 0 && colonne + 1 < nbcolonne) {
+						graph.addEdge(edge);
+						graph.addEdge(edgeP1);
 
-                        Edge edgeM1 = new Edge(numNoeud, numNoeud + nbcolonne - 1, Math.abs(img[ligne][colonne - 1] - img[ligne + 1][colonne]));
-                        Edge edge = new Edge(numNoeud, numNoeud + nbcolonne, Math.abs(img[ligne][colonne + 1] - img[ligne][colonne - 1]));
-                        Edge edgeP1 = new Edge(numNoeud, numNoeud + nbcolonne + 1, Math.abs(img[ligne][colonne + 1] - img[ligne + 1][colonne]));
+					} else if (colonne - 1 >= 0 && colonne + 1 < nbcolonne) {
 
-                        graph.addEdge(edgeM1);
-                        graph.addEdge(edge);
-                        graph.addEdge(edgeP1);
+						Edge edgeM1 = new Edge(numNoeud, numNoeud + nbcolonne - 1, Math.abs(img[ligne][colonne - 1] - img[ligne + 1][colonne]));
+						Edge edge = new Edge(numNoeud, numNoeud + nbcolonne, Math.abs(img[ligne][colonne + 1] - img[ligne][colonne - 1]));
+						Edge edgeP1 = new Edge(numNoeud, numNoeud + nbcolonne + 1, Math.abs(img[ligne][colonne + 1] - img[ligne + 1][colonne]));
 
-                    } else if (colonne - 1 >= 0 && colonne + 1 >= nbcolonne) {
+						graph.addEdge(edgeM1);
+						graph.addEdge(edge);
+						graph.addEdge(edgeP1);
 
-                        Edge edgeM1 = new Edge(numNoeud, numNoeud + nbcolonne - 1, Math.abs(img[ligne][colonne - 1] - img[ligne + 1][colonne]));
-                        Edge edge = new Edge(numNoeud, numNoeud + nbcolonne, img[ligne][colonne - 1]);
+					} else if (colonne - 1 >= 0 && colonne + 1 >= nbcolonne) {
 
-                        graph.addEdge(edgeM1);
-                        graph.addEdge(edge);
+						Edge edgeM1 = new Edge(numNoeud, numNoeud + nbcolonne - 1, Math.abs(img[ligne][colonne - 1] - img[ligne + 1][colonne]));
+						Edge edge = new Edge(numNoeud, numNoeud + nbcolonne, img[ligne][colonne - 1]);
 
-                    }
-                } else {
-                    Edge edge = new Edge(numNoeud, img.length * img[0].length + 1, Math.abs(((colonne - 1) < 0 ? 0 : img[ligne][colonne - 1]) - ((colonne + 1) >= nbcolonne ? 0 : img[ligne][colonne + 1])));
-                    graph.addEdge(edge);
-                }
-            }
-        }
-        return graph;
-    }
+						graph.addEdge(edgeM1);
+						graph.addEdge(edge);
+
+					}
+				} else {
+					Edge edge = new Edge(numNoeud, img.length * img[0].length + 1, Math.abs(((colonne - 1) < 0 ? 0 : img[ligne][colonne - 1]) - ((colonne + 1) >= nbcolonne ? 0 : img[ligne][colonne + 1])));
+					graph.addEdge(edge);
+				}
+			}
+		}
+		return graph;
+	}
+
 	public static Graph toGraph2(int[][] itr) {
 		int nbNodes = itr.length * itr[0].length + 2 + ((itr.length - 2) * itr[0].length);
 		Graph graph = new Graph(nbNodes);
@@ -435,23 +437,35 @@ public class SeamCarving {
 		e.to = tempo;
 	}
 
-    private static int[][] removePixels(int[][] img, ArrayList<Integer> removedNodes){
-        return removePixels(img, new ArrayList<Integer>(){{add(removedNodes)}}, false);
-    }
-    private static int[][] removePixels(int[][] img, ArrayList<Integer>[] removedNodes, boolean numNodeWithZero) {
-        if(numNodeWithZero){
-            removedNodes.forEach(value->convertNumNode0ToPixel(value,img[0].length));
-            removedNodes.removeIf(value -> value == -1);
-        }
-        ArrayList<Integer> newPxl = new ArrayList<>(img.length);
-        int[][] newPxlTab = new int[img.length][];
+	private static int convertNumNodeZeroToPixel(int numNode, int width) {
+		numNode = numNode - 1;
+		int numligne = (numNode / width);
+		int nbLigneZero = numligne / 2;
+		/*System.out.println("ligne : " + numligne);
+		System.out.println(numligne % 2);
+		System.out.println(nbLigneZero + " à zero");*/
+		return numligne % 2 == 0 ? -1 : numNode - nbLigneZero * width + 1;
+	}
+
+	public static int[][] removePixels(int[][] img, ArrayList<Integer> removedNodes) {
+		return removePixels(img, new ArrayList[]{removedNodes}, false);
+	}
+
+	private static int[][] removePixels(int[][] img, ArrayList<Integer>[] removedNodes, boolean numNodeWithZero) {
+		if (numNodeWithZero) {
+			removedNodes[0].addAll(removedNodes[1]);
+			removedNodes[0].forEach(value -> convertNumNodeZeroToPixel(value, img[0].length));
+			removedNodes[0].removeIf(value -> value == -1);
+		}
+		ArrayList<Integer> newPxl = new ArrayList<>(img.length);
+		int[][] newPxlTab = new int[img.length][];
 
 		for (int ligne = 0; ligne < img.length; ligne++) {
 			int nbcolonne = img[ligne].length;
 			newPxl.clear();
 			for (int colonne = 0; colonne < nbcolonne; colonne++) {
 				int numNoeud = colonne + nbcolonne * ligne + 1;
-				if (!removedNodes.contains(numNoeud)) {
+				if (!removedNodes[0].contains(numNoeud)) {
 					newPxl.add(img[ligne][colonne]);
 				}
 			}
