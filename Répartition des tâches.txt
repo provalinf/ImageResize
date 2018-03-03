@@ -4,20 +4,20 @@ Q2  : Valentin BONNAL
 Q3  : Valentin BONNAL / Cyril BASILE
 Q4	: Cyril BASILE
 Q5	: Valentin BONNAL
+2epQ1	: Valentin BONNAL / Cyril BASILE
+2epQ2	: Cyril BASILE / Valentin BONNAL
+3.1	: Valentin BONNAL
+3.2(coul): Valentin BONNAL
 
 Utilisation du logiciel : 
 
-Trois paramètres à rentrer :
-	1. nom de l'image d'origine
-	2. nom de l'image de fin
-	3. nombre de pixels par ligne à supprimer
+Voir à l'execution pour afficher l'aide et les paramètres
 
 
 Améliorations apportées : 
 	_ Barre de progression, temps restant avant la fin de l'execution
-	_ Selection de l'image grâce au premier paramètre
-	_ Choix du nom de l'image résultante grâce au second paramètre
-	_ Nombre de pixels par ligne à supprimer paramétrable
-
-readPGM modifié en ligne 1 (incompatible avec le jar dans la version initiale)
+	_ Simple
+	_ TwoPath
+	_ Énergie avant
+	_ Gestion de la couleur
 	

@@ -4,8 +4,15 @@ import java.io.*;
 import java.util.*;
 
 public class SeamCarving {
-	static HashMap<Integer, Integer> costMap;
+	private static HashMap<Integer, Integer> costMap;
 
+	/**
+	 * Lit et converti une image NB de type PGM ASCII
+	 * en un tableau de pixels
+	 *
+	 * @param fn : path de l'image
+	 * @return tableau de pixels
+	 */
 	public static int[][] readpgm(String fn) {
 		try {
 			//InputStream f = ClassLoader.getSystemClassLoader().getResourceAsStream(fn);
@@ -35,6 +42,13 @@ public class SeamCarving {
 		}
 	}
 
+	/**
+	 * Lit et converti une image RVB de type PPM ASCII
+	 * en un tableau de pixels
+	 *
+	 * @param fn : path de l'image
+	 * @return tableau de pixels
+	 */
 	public static int[][][] readppm(String fn) {
 		try {
 			BufferedReader d = new BufferedReader(new FileReader(fn));
@@ -63,13 +77,18 @@ public class SeamCarving {
 		}
 	}
 
+	/**
+	 * Converti un tableau de pixels en une image (fichier) NB de type PGM ASCII
+	 *
+	 * @param image    : tableau de pixels
+	 * @param filename : nom du fichier image
+	 */
 	public static void writepgm(int[][] image, String filename) {
 		FileWriter flot;
 		PrintWriter flotFiltre;
 		File fichier;
 		try {
-			String nomFichier = filename;
-			fichier = new File(nomFichier);
+			fichier = new File(filename);
 			if (fichier.exists()) {
 				throw new IOException("Le fichier existe deja");
 			}
@@ -78,9 +97,9 @@ public class SeamCarving {
 			flotFiltre.println("P2");
 			flotFiltre.println(image[0].length + " " + image.length);
 			flotFiltre.println("255");
-			for (int i = 0; i < image.length; i++) {
-				for (int j = 0; j < image[i].length; j++) {
-					flotFiltre.print(image[i][j] + " ");
+			for (int[] anImage : image) {
+				for (int anAnImage : anImage) {
+					flotFiltre.print(anAnImage + " ");
 				}
 				System.out.println();
 			}
@@ -90,13 +109,18 @@ public class SeamCarving {
 		}
 	}
 
+	/**
+	 * Converti un tableau de pixels en une image (fichier) RVB de type PPM ASCII
+	 *
+	 * @param image    : tableau de pixels
+	 * @param filename : nom du fichier image
+	 */
 	public static void writeppm(int[][][] image, String filename) {
 		FileWriter flot;
 		PrintWriter flotFiltre;
 		File fichier;
 		try {
-			String nomFichier = filename;
-			fichier = new File(nomFichier);
+			fichier = new File(filename);
 			if (fichier.exists()) {
 				throw new IOException("Le fichier existe deja");
 			}
@@ -117,6 +141,12 @@ public class SeamCarving {
 		}
 	}
 
+	/**
+	 * Calcul du facteur d'intéret de chaque pixels NB
+	 *
+	 * @param image : image à traiter
+	 * @return tableau comprenant les facteurs d'intéret
+	 */
 	public static int[][] interest(int[][] image) {
 		int interest[][] = new int[image.length][];
 
@@ -138,7 +168,7 @@ public class SeamCarving {
 		return interest;
 	}
 
-	public static int[][] interestRows(int[][] image) {
+	/*public static int[][] interestRows(int[][] image) {
 		int nbcolonne = image[0].length;
 		int interest[][] = new int[nbcolonne][];
 		for (int colonne = nbcolonne-1; colonne <= 0; colonne--) {
@@ -156,8 +186,14 @@ public class SeamCarving {
 			}
 		}
 		return interest;
-	}
+	}*/
 
+	/**
+	 * Calcul du facteur d'intéret de chaque pixels RVB
+	 *
+	 * @param image : image à traiter
+	 * @return tableau comprenant les facteurs d'intéret
+	 */
 	public static int[][] interestColor(int[][][] image) {
 		int interest[][] = new int[image.length][];
 
@@ -179,10 +215,24 @@ public class SeamCarving {
 		return interest;
 	}
 
+	/**
+	 * Réalise la moyenne des 3 couleurs RVB d'un pixel
+	 *
+	 * @param RVB : tableau de 3 couleur
+	 * @return moyenne (double)
+	 */
+	@SuppressWarnings("ConstantConditions")
 	private static double averageRVB(int[] RVB) {
 		return Arrays.stream(RVB).average().getAsDouble();
 	}
 
+	/**
+	 * Crée un graph à partir des facteurs d'intéret d'une image
+	 *
+	 * @param itr : tableau de facteurs d'intéret
+	 * @return graph
+	 */
+	@SuppressWarnings("Duplicates")
 	public static Graph toGraph(int[][] itr) {
 		Graph graph = new Graph(itr.length * itr[0].length + 2);
 		for (int i = 1; i < itr[0].length + 1; i++) {
@@ -233,6 +283,13 @@ public class SeamCarving {
 		return graph;
 	}
 
+	/**
+	 * Crée un graph énergie à partir d'une image
+	 * représentant
+	 *
+	 * @param img : image source
+	 * @return graph
+	 */
 	public static Graph toGraphEnergie(int[][] img) {
 		Graph graph = new Graph(img.length * img[0].length + 2);
 		for (int i = 1; i < img[0].length + 1; i++) {
@@ -283,6 +340,15 @@ public class SeamCarving {
 		return graph;
 	}
 
+	/**
+	 * Crée un graph à partir des facteurs d'intéret d'une image
+	 * tout replaçant chaque sommet intérieur par deux sommets
+	 * relié par une arête de poids nul
+	 *
+	 * @param itr : tableau de facteurs d'intéret
+	 * @return graph
+	 */
+	@SuppressWarnings("Duplicates")
 	public static Graph toGraph2(int[][] itr) {
 		int nbNodes = itr.length * itr[0].length + 2 + ((itr.length - 2) * itr[0].length);
 		Graph graph = new Graph(nbNodes);
@@ -342,9 +408,18 @@ public class SeamCarving {
 		return graph;
 	}
 
+	/**
+	 * Algorithme de dijsktra recherchant les noeuds
+	 * composant le plus court chemin
+	 *
+	 * @param graph : graph source
+	 * @param s     : sommet de départ
+	 * @param t     : sommet de d'arrivé
+	 * @return liste des noeuds du plus court chemin
+	 */
 	public static ArrayList<Integer> dijkstra(Graph graph, int s, int t) {
 		int min, cost;
-		HashMap<Integer, Edge> parent = new HashMap<Integer, Edge>(graph.vertices());
+		HashMap<Integer, Edge> parent = new HashMap<>(graph.vertices());
 		ArrayList<Integer> path = new ArrayList<>(graph.vertices());
 		boolean[] visitedNodes = new boolean[graph.vertices()];
 		Heap heap = new Heap(graph.vertices());
@@ -372,10 +447,23 @@ public class SeamCarving {
 		return path;
 	}
 
-	public static ArrayList<Integer> dijkstra2(Graph graph, int s, int t) {
+	/**
+	 * Algorithme de dijsktra recherchant les noeuds
+	 * composant le plus court chemin
+	 * Enregistre également pour chaque noeud son coût minimal
+	 * <p>
+	 * /!\ variable globale costMap : cout minimal des noeuds
+	 *
+	 * @param graph : graph source
+	 * @param s     : sommet de départ
+	 * @param t     : sommet de d'arrivé
+	 * @return liste des noeuds du plus court chemin
+	 */
+	private static ArrayList<Integer> dijkstra2(Graph graph, int s, int t) {
 		int min, cost;
 		costMap = new HashMap<>(graph.vertices());
-		HashMap<Integer, Edge> parent = new HashMap<Integer, Edge>(graph.vertices());
+		costMap.put(0, 0);    // cout premer noeud
+		HashMap<Integer, Edge> parent = new HashMap<>(graph.vertices());
 		ArrayList<Integer> path = new ArrayList<>(graph.vertices());
 		boolean[] visitedNodes = new boolean[graph.vertices()];
 		Heap heap = new Heap(graph.vertices());
@@ -386,7 +474,9 @@ public class SeamCarving {
 			for (Edge e : graph.next(min)) {
 				if (!visitedNodes[e.to]) {
 					cost = heap.priority(min) + e.cost;
-					costMap.put(e.from, heap.priority(min));
+					if (costMap.get(e.to) == null || e.cost + costMap.get(e.from) < costMap.get(e.to)) {
+						costMap.put(e.to, e.cost + costMap.get(e.from));
+					}
 					if (cost < heap.priority(e.to)) {
 						heap.decreaseKey(e.to, cost);
 						parent.put(e.to, e);
@@ -405,10 +495,18 @@ public class SeamCarving {
 		return path;
 	}
 
+	/**
+	 * Recherche deux plus courts chemin dans un graph
+	 *
+	 * @param g : graph source
+	 * @param s : sommet de départ
+	 * @param t : sommet d'arrivé
+	 * @return listes de deux plus courts chemins
+	 */
 	public static ArrayList<Integer>[] twoPath(Graph g, int s, int t) {
-		ArrayList<Integer>[] res = new ArrayList[2];
+		@SuppressWarnings("unchecked") ArrayList<Integer>[] res = new ArrayList[2];
 		res[0] = dijkstra2(g, s, t);
-		res[1] = new ArrayList<Integer>();
+		res[1] = new ArrayList<>();
 		ArrayList<Integer> shortPath = res[0];
 		Iterator ite = g.edges().iterator();
 
@@ -416,7 +514,9 @@ public class SeamCarving {
 		int j = 0;
 		while (ite.hasNext()) {
 			Edge e = (Edge) ite.next();
+			//System.out.print("noeud : "+e.from);
 			e.cost = e.cost + (costMap.get(e.from) - costMap.get(e.to));
+			//System.out.println(" coutmin : " + costMap.get(e.from));
 			//System.out.println(shortPath);
 			if (j + 1 < shortPath.size()) {
 				int from = shortPath.get(j);
@@ -442,7 +542,14 @@ public class SeamCarving {
 					Edge e = (Edge) ite.next();
 					if (e.from == dij.get(id)) {
 						if (dij.contains(e.to)) {
+							for (int idd = 0; idd < res[0].size(); idd++) {
+								if (res[0].get(idd) == e.from) {
+									res[0].set(idd + 1, e.to);
+									break;
+								}
+							}
 							dij.removeIf(value -> value == e.to);
+							//System.exit(0);
 						}
 					}
 				}
@@ -451,12 +558,29 @@ public class SeamCarving {
 		return res;
 	}
 
+	/**
+	 * Inverse le sens de l'arête du noeud
+	 *
+	 * @param e : noeud
+	 */
 	private static void inverseSens(Edge e) {
 		int tempo = e.from;
 		e.from = e.to;
 		e.to = tempo;
 	}
 
+	/**
+	 * Converti un numéro de noeud en son équivalent pixel
+	 * pour un graph dont on a ajouté des noeuds
+	 * reliés par des arêtes de coût nul.
+	 * <p>
+	 * Retourne -1 si le noeud n'est pas un pixel
+	 *
+	 * @param numNode : numéro du noeud
+	 * @param width   : largeur du graph
+	 * @param max     : numéro du noeud de fin
+	 * @return numéro du pixel
+	 */
 	private static int convertNumNodeZeroToPixel(int numNode, int width, int max) {
 		if (numNode <= width) return numNode;
 		if (numNode == max) return numNode;
@@ -469,14 +593,36 @@ public class SeamCarving {
 		return numligne % 2 == 0 ? -1 : numNode - nbLigneZero * width + 1;
 	}
 
+	/**
+	 * Supprime les pixels, passés en paramètres, de l'image NB
+	 * <p>
+	 * Surcharge de la méthode removePixels()
+	 *
+	 * @param img          : image source
+	 * @param removedNodes : liste des numéros des pixels à supprimer
+	 * @return image traitée
+	 */
+	@SuppressWarnings("unchecked")
 	public static int[][] removePixels(int[][] img, ArrayList<Integer> removedNodes) {
 		return removePixels(img, new ArrayList[]{removedNodes}, false);
 	}
 
+	/**
+	 * Supprime les pixels, passés en paramètres, de l'image NB
+	 * Traite les listes (max 2) des numéros des noeuds
+	 * ou numéros des pixels à supprimer
+	 * avec la méthode convertNumNodeZeroToPixel() si
+	 * le numNodeWithZero est à true
+	 *
+	 * @param img             : image source
+	 * @param removedNodes    : listes (max 2) des numéros des pixels ou des noeuds à supprimer
+	 * @param numNodeWithZero : boolean true si liste de noeuds, false si liste de pixels
+	 * @return image traitée
+	 */
 	public static int[][] removePixels(int[][] img, ArrayList<Integer>[] removedNodes, boolean numNodeWithZero) {
 		if (numNodeWithZero) {
 			removedNodes[0].addAll(removedNodes[1]);
-			removedNodes[0].forEach(value -> value = convertNumNodeZeroToPixel(value, img[0].length, img.length));
+			removedNodes[0].forEach(value -> value = convertNumNodeZeroToPixel(value, img[0].length, (img.length * img[0].length + 2 + ((img.length - 2) * img[0].length)) - 1));
 			removedNodes[0].removeIf(value -> value == -1);
 		}
 		ArrayList<Integer> newPxl = new ArrayList<>(img.length);
@@ -497,6 +643,13 @@ public class SeamCarving {
 		return newPxlTab;
 	}
 
+	/**
+	 * Supprime les pixels, passés en paramètres, de l'image RVB
+	 *
+	 * @param img          : image source
+	 * @param removedNodes : liste des numéros des pixels à supprimer
+	 * @return image traitée
+	 */
 	public static int[][][] removePixelsColor(int[][][] img, ArrayList<Integer> removedNodes) {
 		ArrayList<int[]> newPxl = new ArrayList<>(img.length);
 		int[][][] newPxlTab = new int[img.length][][];
@@ -518,9 +671,70 @@ public class SeamCarving {
 		return newPxlTab;
 	}
 
+	/**
+	 * Vérifie la validité des arguments lors de l'exécution du programme
+	 *
+	 * @param args : tableau d'arguments
+	 */
 	private static void verifieArguments(String[] args) {
-		if (args.length != 3) {
-			System.out.println("Vous devez spécifier en arguments ./SeamCarving imageInitiale.pgm imageFinale.pgm nbPixelsHorizontalSuppr");
+		if (args.length == 1 && args[0].equals("666")) {
+			System.out.println("Easter Egg");
+			System.out.println("                   :I. ..\n" +
+					"                  :III/ I.\n" +
+					"                 : III  II\n" +
+					" Modelisation   :  III .II\n" +
+					"     666        : .III III\n" +
+					"                : III' III\n" +
+					"                : III  II'\n" +
+					"                : `I/__L_\n" +
+					"              ./'        ~~-.\n" +
+					"             .\"   -~~-       `.\n" +
+					"             :    .==.         :\n" +
+					"             |    `..b'      ___:\n" +
+					"             |           __.`\\__/__ \n" +
+					"              `.       ----   _i_---\n" +
+					"              / `-........:`----'\n" +
+					"            /'    ,MMMMMMM\n" +
+					"          :'     .MMMMMMMMm\n" +
+					"         :'      mMMMMMMMMMm\n" +
+					"        /:       MMMMMMMMMMM\n" +
+					"      /' :       MMMMMMMMMMM\n" +
+					"    /\"           `MMMMMMMMM'\n" +
+					"   :      \\       `MMMMMMM'\\\n" +
+					"  :'       `:      MMMMMMM: `\\\n" +
+					"  :         `:     `MMMMM':   `:\n" +
+					"  :      mMMMm      MMMM' :    :\n" +
+					"  :     mMMMMMMm    mMMm  :    :\n" +
+					"   \\    `MMMMMMm    mMMm  :   /\n" +
+					"  /~~~   MMMMMMm    mJVm  : /'___\n" +
+					":'| |   /`JMMMMm . .m96m  \\      \\\n" +
+					" ~~~~~~~        \\_:_|   L_/~~~~~~\n" +
+					"Cyril BASILE - Valentin BONNAL\n");
+		}
+
+		if (args.length < 2 || args.length > 4) {
+			help();
+			System.exit(0);
+		}
+
+		int ext1 = args[0].lastIndexOf('.');
+		int ext2 = args[1].lastIndexOf('.');
+
+		if (!args[0].substring(ext1).equalsIgnoreCase(".pgm")
+				&& !args[0].substring(ext1).equalsIgnoreCase(".ppm")) {
+			System.out.println("L'extension n'est pas supportée");
+			help();
+			System.exit(0);
+		}
+
+		if (!args[0].substring(ext1).equalsIgnoreCase(args[1].substring(ext2))) {
+			System.out.println("L'extension de sortie doit être la même que l'extension d'entrée");
+			help();
+			System.exit(0);
+		}
+
+		if (args.length == 4 && !args[3].equals("twopath") && !args[3].equals("energie")) {
+			help();
 			System.exit(0);
 		}
 
@@ -535,48 +749,127 @@ public class SeamCarving {
 		}
 	}
 
+	private static void help() {
+		System.out.println("Vous devez spécifier en arguments :\n" +
+				" - ./SeamCarving imageInitiale.pgm imageFinale.pgm [nbPixelsHorizontalSuppr]\n" +
+				" - ./SeamCarving imageInitiale.ppm imageFinale.ppm [nbPixelsHorizontalSuppr]\n" +
+				" - ./SeamCarving imageInitiale.pgm imageFinale.pgm nbPixelsHorizontalSuppr twopath /!\\pixels rem x2\n" +
+				" - ./SeamCarving imageInitiale.pgm imageFinale.pgm nbPixelsHorizontalSuppr energie\n" +
+				" [nbPixelsHorizontalSuppr] default=50\n\n");
+	}
+
 	public static void main(String[] args) {
 		verifieArguments(args);
-		int table[][] = readpgm(args[0]);
 
-		if (table == null || table.length <= 0 || table[0].length <= 0) {
+		if (args[0].substring(args[0].lastIndexOf('.')).equalsIgnoreCase(".pgm")) {
+			pgm(args);
+		} else {
+			ppm(args);
+		}
+
+	}
+
+	private static void ppm(String[] args) {
+		int table[][][] = readppm(args[0]);
+		if (table == null || table.length <= 0 || table[0].length <= 4) {
 			System.out.println(table == null);
-			System.out.println(table.length);
+			System.out.println(Objects.requireNonNull(table).length);
 			System.out.println(table[0].length);
 			System.out.println("L'image sélectionnée est trop petite !");
 			System.exit(1);
 		}
-		if (table[0].length <= Integer.parseInt(args[2])) {
-			System.out.println("L'image selectionnée n'est pas assez grande par rapport au nombre de pixel que vous souhaitez retirer !");
+
+		int nbPixels = args.length > 2 ? Integer.parseInt(args[2]) : 50;
+
+		if (table[0].length <= nbPixels) {
+			System.out.println("L'image selectionnée n'est pas assez grande par rapport au nombre de pixel à retirer !");
 			System.exit(2);
 		}
 
-		ProgressBar pb = new ProgressBar(" " + args[0] + " -> " + args[1], Integer.parseInt(args[2])/*, ProgressBarStyle.ASCII*/);
+		ProgressBar pb = new ProgressBar(" " + args[0] + " -> " + args[1], nbPixels/*, ProgressBarStyle.ASCII*/);
 
 		pb.start();
-		for (int ii = 0; ii < Integer.parseInt(args[2]); ii++) {
-			//System.out.println(ii + "ème cycle");
+		for (int ii = 0; ii < nbPixels; ii++) {
 			pb.setExtraMessage("Calcul de l'interet de chaque pixels.");
-			int itr[][] = interest(table);
-           /* for (int i = 0; i < itr.length; i++) {
-                for (int j = 0; j < itr[i].length; j++) {
-                    System.out.print(itr[i][j] + ",");
-                }
-                System.out.println();
-            }
-            System.out.println();
-            System.out.println("Dijkstra");*/
+			int itr[][] = SeamCarving.interestColor(Objects.requireNonNull(table));
 			pb.setExtraMessage("Calcul des pixels à supprimer........");
-			ArrayList<Integer> dijkstra = dijkstra(toGraph(itr), 0, itr.length * itr[0].length + 1);
-			//System.out.println(dijkstra);
+			ArrayList<Integer> dijkstra = SeamCarving.dijkstra(SeamCarving.toGraph(itr), 0, itr.length * itr[0].length + 1);
 
 			pb.setExtraMessage("Suppression des pixels...............");
-			int[][] newImg = removePixels(table, dijkstra);
+			table = SeamCarving.removePixelsColor(table, dijkstra);    // newImg
 			pb.step();
-			table = newImg;
 		}
 
-		pb.stepTo(Integer.parseInt(args[2]));
+		pb.stepTo(nbPixels);
+		pb.setExtraMessage("Ecriture du fichier " + args[1]);
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		writeppm(table, args[1]);
+		pb.setExtraMessage("Fin !");
+		pb.stop();
+	}
+
+	private static void pgm(String[] args) {
+		int table[][] = readpgm(args[0]);
+		if (table == null || table.length <= 0 || table[0].length <= 4) {
+			System.out.println(table == null);
+			System.out.println(Objects.requireNonNull(table).length);
+			System.out.println(table[0].length);
+			System.out.println("L'image sélectionnée est trop petite !");
+			System.exit(1);
+		}
+
+		int nbPixels = args.length > 2 ? Integer.parseInt(args[2]) : 50;
+
+		if (table[0].length <= nbPixels) {
+			System.out.println("L'image selectionnée n'est pas assez grande par rapport au nombre de pixel à retirer !");
+			System.exit(2);
+		}
+
+		ProgressBar pb = new ProgressBar(" " + args[0] + " -> " + args[1], nbPixels/*, ProgressBarStyle.ASCII*/);
+
+		pb.start();
+
+		if (args.length > 3) {
+			if (args[3].equals("energie")) {
+				for (int ii = 0; ii < nbPixels; ii++) {
+					pb.setExtraMessage("Calcul des pixels (energie) à supprimer........");
+					ArrayList<Integer> dijkstra = dijkstra(toGraphEnergie(table), 0, table.length * table[0].length + 1);
+
+					pb.setExtraMessage("Suppression des pixels...............");
+					table = removePixels(table, dijkstra);    // newImg
+					pb.step();
+				}
+			} else {
+				for (int ii = 0; ii < nbPixels; ii++) {
+					pb.setExtraMessage("Calcul de l'interet de chaque pixels.");
+					int itr[][] = interest(table);
+					pb.setExtraMessage("Calcul des pixels (twopath) à supprimer........");
+					ArrayList<Integer>[] twopath = SeamCarving.twoPath(SeamCarving.toGraph2(itr), 0, (itr.length * itr[0].length + 2 + ((itr.length - 2) * itr[0].length)) - 1);
+
+					pb.setExtraMessage("Suppression des pixels...............");
+					table = SeamCarving.removePixels(table, twopath, true);    // newImg
+					pb.step();
+				}
+			}
+		} else {
+			for (int ii = 0; ii < nbPixels; ii++) {
+				pb.setExtraMessage("Calcul de l'interet de chaque pixels.");
+				int itr[][] = interest(table);
+				pb.setExtraMessage("Calcul des pixels à supprimer........");
+				ArrayList<Integer> dijkstra = dijkstra(toGraph(itr), 0, itr.length * itr[0].length + 1);
+
+				pb.setExtraMessage("Suppression des pixels...............");
+				table = removePixels(table, dijkstra);    // newImg
+				pb.step();
+			}
+		}
+
+
+		pb.stepTo(nbPixels);
 		pb.setExtraMessage("Ecriture du fichier " + args[1]);
 		try {
 			Thread.sleep(2000);
@@ -586,5 +879,6 @@ public class SeamCarving {
 		writepgm(table, args[1]);
 		pb.setExtraMessage("Fin !");
 		pb.stop();
+
 	}
 }
