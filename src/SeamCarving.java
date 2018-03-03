@@ -412,15 +412,15 @@ public class SeamCarving {
 		ArrayList<Integer> dij = dijkstra2(g, s, t);
 		int max = dij.get(0);
 		//for (int node : dij) { // /!\ Non
-		for (int iii = 0; iii < dij.size(); iii++) {
-			if (dij.get(iii) >= max) {
-				max = dij.get(iii);
-				res[1].add(dij.get(iii));
+		for (int id = 0; id < dij.size(); id++) {
+			if (dij.get(id) >= max) {
+				max = dij.get(id);
+				res[1].add(dij.get(id));
 			} else {
-				Iterator ite2 = g.edges().iterator();
-				while (ite2.hasNext()) {
-					Edge e = (Edge) ite2.next();
-					if (e.from == dij.get(iii)) {
+				ite = g.edges().iterator();
+				while (ite.hasNext()) {
+					Edge e = (Edge) ite.next();
+					if (e.from == dij.get(id)) {
 						if (dij.contains(e.to)) {
 							dij.removeIf(value -> value == e.to);
 						}
@@ -451,10 +451,10 @@ public class SeamCarving {
 		return removePixels(img, new ArrayList[]{removedNodes}, false);
 	}
 
-	private static int[][] removePixels(int[][] img, ArrayList<Integer>[] removedNodes, boolean numNodeWithZero) {
+	public static int[][] removePixels(int[][] img, ArrayList<Integer>[] removedNodes, boolean numNodeWithZero) {
 		if (numNodeWithZero) {
 			removedNodes[0].addAll(removedNodes[1]);
-			removedNodes[0].forEach(value -> convertNumNodeZeroToPixel(value, img[0].length));
+			removedNodes[0].forEach(value -> value = convertNumNodeZeroToPixel(value, img[0].length));
 			removedNodes[0].removeIf(value -> value == -1);
 		}
 		ArrayList<Integer> newPxl = new ArrayList<>(img.length);
