@@ -138,6 +138,26 @@ public class SeamCarving {
 		return interest;
 	}
 
+	public static int[][] interestRows(int[][] image) {
+		int nbcolonne = image[0].length;
+		int interest[][] = new int[nbcolonne][];
+		for (int colonne = nbcolonne-1; colonne <= 0; colonne--) {
+			for (int ligne = 0; ligne < image.length; ligne++) {
+				interest[colonne-nbcolonne-1] = new int[image.length];
+				if (colonne - 1 < 0 && colonne + 1 < nbcolonne) {    // premier pixel, (rien à gauche)
+					interest[ligne][colonne] = Math.abs(image[ligne][colonne] - image[ligne][colonne + 1]);
+				} else if (colonne - 1 >= 0 && colonne + 1 < nbcolonne) {
+					interest[ligne][colonne] = Math.abs((image[ligne][colonne] - (image[ligne][colonne - 1] + image[ligne][colonne + 1]) / 2));
+				} else if (colonne - 1 >= 0 && colonne + 1 >= nbcolonne) {
+					interest[ligne][colonne] = Math.abs(image[ligne][colonne - 1] - image[ligne][colonne]);
+				} else {
+					interest[ligne][colonne] = image[ligne][colonne];
+				}
+			}
+		}
+		return interest;
+	}
+
 	public static int[][] interestColor(int[][][] image) {
 		int interest[][] = new int[image.length][];
 
@@ -437,7 +457,9 @@ public class SeamCarving {
 		e.to = tempo;
 	}
 
-	private static int convertNumNodeZeroToPixel(int numNode, int width) {
+	private static int convertNumNodeZeroToPixel(int numNode, int width, int max) {
+		if (numNode <= width) return numNode;
+		if (numNode == max) return numNode;
 		numNode = numNode - 1;
 		int numligne = (numNode / width);
 		int nbLigneZero = numligne / 2;
@@ -454,7 +476,7 @@ public class SeamCarving {
 	public static int[][] removePixels(int[][] img, ArrayList<Integer>[] removedNodes, boolean numNodeWithZero) {
 		if (numNodeWithZero) {
 			removedNodes[0].addAll(removedNodes[1]);
-			removedNodes[0].forEach(value -> value = convertNumNodeZeroToPixel(value, img[0].length));
+			removedNodes[0].forEach(value -> value = convertNumNodeZeroToPixel(value, img[0].length, img.length));
 			removedNodes[0].removeIf(value -> value == -1);
 		}
 		ArrayList<Integer> newPxl = new ArrayList<>(img.length);
